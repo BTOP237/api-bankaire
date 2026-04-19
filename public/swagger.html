@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>API Bancaire - Swagger Documentation</title>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/4.15.5/swagger-ui.min.css">
+    <style>
+        html {
+            box-sizing: border-box;
+            overflow: -moz-scrollbars-vertical;
+            overflow-y: scroll;
+        }
+        *, *:before, *:after {
+            box-sizing: inherit;
+        }
+        body {
+            margin: 0;
+            padding: 0;
+        }
+    </style>
+</head>
+<body>
+    <div id="swagger-ui"></div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/4.15.5/swagger-ui.min.js"></script>
+    <script>
+        window.onload = function() {
+            // Configuration OpenAPI complète inline
+            const spec = {
+                openapi: '3.0.0',
+                info: {
+                    title: 'API Bancaire',
+                    version: '1.0.0',
+                    description: 'API pour gérer les utilisateurs bancaires',
+                    contact: {
+                        email: 'support@bank.com'
+                    }
+                },
+                servers: [
+                    {
+                        url: window.location.origin,
+                        description: 'Serveur courant'
+                    }
+                ],
+                paths: {
+                    '/api/users': {
+                        get: {
+                            summary: 'Lister tous les utilisateurs',
+                            description: 'Récupère la liste de tous les utilisateurs enregistrés',
+                            operationId: 'listUsers',
+                            tags: ['Utilisateurs'],
+                            responses: {
+                                '200': {
+                                    description: 'Liste des utilisateurs',
+                                    content: {
+                                        'application/json': {
+                                            schema: {
+                                                type: 'object',
+                                                properties: {
+                                                    success: { type: 'boolean' },
+                                                    count: { type: 'integer' },
+                                                    data: {
+                                                        type: 'array',
+                                                        items: {
+                                                            $ref: '#/components/schemas/User'
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        post: {
+                            summary: 'Créer un nouvel utilisateur',
+                            description: 'Crée un nouvel utilisateur dans le système',
+                            operationId: 'createUser',
+                            tags: ['Utilisateurs'],
+                            requestBody: {
+                                required: true,
+                                content: {
+                                    'application/json': {
+                                        schema: {
+                                            $ref: '#/components/schemas/UserInput'
+                                        },
+                                        example: {
+                                            first_name: 'Jean',
+                                            last_name: 'Dupont',
+                                            email: 'jean@example.com',
+                                            phone: '+33612345678',
+                                            account_type: 'standard',
+                                            balance: 1000
+                                        }
+                                    }
+                                }
+                            },
+                            responses: {
+                                '201': {
+                                    description: 'Utilisateur créé',
+                                    content: {
+                                        'application/json': {
+                                            schema: {
+                                                type: 'object',
+                                                properties: {
+                                                    success: { type: 'boolean' },
+                                                    message: { type: 'string' },
+                                                    data: { $ref: '#/components/schemas/User' }
+                                                }
+                                            }
+                                        }
+                                    }
+                                },
+                                '400': {
+                                    description: 'Erreur de validation'
+                                }
+                            }
+                        }
+                    },
+                    '/api/users/{id}': {
+                        get: {
+                            summary: 'Obtenir un utilisateur',
+                            operationId: 'getUser',
+                            tags: ['Utilisateurs'],
+                            parameters: [
+                                {
+                                    name: 'id',
+                                    in: 'path',
+                                    required: true,
+                                    schema: { type: 'integer' }
+                                }
+                            ],
+                            responses: {
+                                '200': {
+                                    description: 'Utilisateur trouvé',
+                                    content: {
+                                        'application/json': {
+                                            schema: {
+                                                type: 'object',
+                                                properties: {
+                                                    success: { type: 'boolean' },
+                                                    data: { $ref: '#/components/schemas/User' }
+                                                }
+                                            }
+                                        }
+                                    }
+                                },
+                                '404': {
+                                    description: 'Utilisateur non trouvé'
+                                }
+                            }
+                        },
+                        put: {
+                            summary: 'Mettre à jour un utilisateur',
+                            operationId: 'updateUser',
+                            tags: ['Utilisateurs'],
+                            parameters: [
+                                {
+                                    name: 'id',
+                                    in: 'path',
+                                    required: true,
+                                    schema: { type: 'integer' }
+                                }
+                            ],
+                            requestBody: {
+                                content: {
+                                    'application/json': {
+                                        schema: { $ref: '#/components/schemas/UserUpdate' }
+                                    }
+                                }
+                            },
+                            responses: {
+                                '200': {
+                                    description: 'Utilisateur modifié'
+                                },
+                                '404': {
+                                    description: 'Utilisateur non trouvé'
+                                }
+                            }
+                        },
+                        delete: {
+                            summary: 'Supprimer un utilisateur',
+                            operationId: 'deleteUser',
+                            tags: ['Utilisateurs'],
+                            parameters: [
+                                {
+                                    name: 'id',
+                                    in: 'path',
+                                    required: true,
+                                    schema: { type: 'integer' }
+                                }
+                            ],
+                            responses: {
+                                '200': {
+                                    description: 'Utilisateur supprimé'
+                                },
+                                '404': {
+                                    description: 'Utilisateur non trouvé'
+                                }
+                            }
+                        }
+                    }
+                },
+                components: {
+                    schemas: {
+                        User: {
+                            type: 'object',
+                            properties: {
+                                id: { type: 'integer', example: 1 },
+                                first_name: { type: 'string', example: 'Jean' },
+                                last_name: { type: 'string', example: 'Dupont' },
+                                email: { type: 'string', format: 'email', example: 'jean@example.com' },
+                                phone: { type: 'string', example: '+33612345678' },
+                                account_number: { type: 'string', example: 'ACC123456' },
+                                balance: { type: 'number', format: 'float', example: 1000.50 },
+                                account_type: { type: 'string', enum: ['standard', 'premium'], example: 'standard' },
+                                created_at: { type: 'string', format: 'date-time' },
+                                updated_at: { type: 'string', format: 'date-time' }
+                            }
+                        },
+                        UserInput: {
+                            type: 'object',
+                            required: ['first_name', 'last_name', 'email', 'phone'],
+                            properties: {
+                                first_name: { type: 'string', example: 'Jean' },
+                                last_name: { type: 'string', example: 'Dupont' },
+                                email: { type: 'string', format: 'email', example: 'jean@example.com' },
+                                phone: { type: 'string', example: '+33612345678' },
+                                account_type: { type: 'string', enum: ['standard', 'premium'], default: 'standard' },
+                                balance: { type: 'number', format: 'float', default: 0 }
+                            }
+                        },
+                        UserUpdate: {
+                            type: 'object',
+                            properties: {
+                                first_name: { type: 'string' },
+                                last_name: { type: 'string' },
+                                phone: { type: 'string' },
+                                balance: { type: 'number', format: 'float' }
+                            }
+                        }
+                    }
+                }
+            };
+
+            SwaggerUIBundle({
+                spec: spec,
+                dom_id: '#swagger-ui',
+                presets: [
+                    SwaggerUIBundle.presets.apis,
+                    SwaggerUIBundle.SwaggerUIStandalonePreset
+                ],
+                layout: 'StandaloneLayout',
+                deepLinking: true,
+                onComplete: function() {
+                    console.log('Swagger UI loaded');
+                }
+            });
+        };
+    </script>
+</body>
+</html>
