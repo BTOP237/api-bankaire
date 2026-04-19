@@ -1,8 +1,15 @@
 # Utiliser une image PHP avec Apache
 FROM php:7.4-apache
 
-# Installer les extensions requises
-RUN docker-php-ext-install sqlite3 pdo_sqlite
+# Installer les dépendances de développement et sqlite3
+RUN apt-get update && apt-get install -y \
+    sqlite3 \
+    libsqlite3-dev \
+    build-essential \
+    && rm -rf /var/lib/apt/lists/*
+
+# Installer les extensions PHP
+RUN docker-php-ext-install pdo_sqlite
 
 # Activer mod_rewrite pour Apache
 RUN a2enmod rewrite
