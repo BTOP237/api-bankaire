@@ -1,0 +1,16 @@
+{
+    "name": "banking-api/api",
+    "description": "API Bancaire Simple",
+    "type": "project",
+    "require": {
+        "php": ">=7.4",
+        "ext-sqlite3": "*"
+    },
+    "require-dev": {
+        "zircote/swagger-php": "^3.0"
+    },
+    "scripts": {
+        "generate-docs": "php vendor/bin/openapi -o public/swagger.json src/",
+        "start": "php -S localhost:8000 -t public"
+    }
+}
